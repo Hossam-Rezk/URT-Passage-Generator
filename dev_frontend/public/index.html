@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>URT Practice (dev)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="brand">URT Practice <span class="badge" id="mode">dev</span></div>
+    <form id="login" class="login">
+      <label>Student id <input id="userId" type="number" min="1" required></label>
+      <label class="check"><input id="asAdmin" type="checkbox"> admin</label>
+      <button type="submit">Sign in</button>
+    </form>
+    <div id="who" class="who" hidden><span id="whoText"></span> <button id="logout" class="link">switch</button></div>
+  </header>
+
+  <main>
+    <section id="pick" class="card" hidden>
+      <h2>Choose a subject</h2>
+      <div id="subjects" class="subjects"></div>
+      <p id="resumeBox" class="muted" hidden>
+        Unfinished passage found. <button id="resume" class="link">Resume it</button>
+      </p>
+    </section>
+
+    <section id="waiting" class="card center" hidden>
+      <div class="spinner"></div>
+      <p id="waitText">Preparing a new passage…</p>
+    </section>
+
+    <section id="message" class="card" hidden><p id="messageText"></p><button id="back" class="link">Back to subjects</button></section>
+
+    <article id="passage" hidden>
+      <div class="meta" id="passageMeta"></div>
+      <h1 id="title"></h1>
+      <div id="body" class="body"></div>
+      <div id="figures"></div>
+      <form id="questions"></form>
+      <div class="actions">
+        <button id="submit" type="submit" form="questions">Submit answers</button>
+        <span id="answered" class="muted"></span>
+      </div>
+      <section id="result" class="card" hidden></section>
+      <div class="actions"><button id="next" class="secondary" hidden>Next passage</button></div>
+    </article>
+
+    <section id="admin" class="card" hidden>
+      <h2>Admin: pool and jobs</h2>
+      <pre id="stats"></pre>
+      <button id="refreshStats" class="secondary">Refresh</button>
+    </section>
+  </main>
+
+  <footer class="muted">Local test frontend for the URT API. Not part of the product.</footer>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

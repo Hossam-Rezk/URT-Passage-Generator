@@ -1,0 +1,14 @@
+{
+  "name": "urt-dev-frontend",
+  "private": true,
+  "description": "Local test frontend for the URT passage API. Not part of the product; lives only on the dev-frontend branch.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server.js",
+    "live": "node server.js --live"
+  },
+  "dependencies": {
+    "express": "^5.3.0"
+  }
+}

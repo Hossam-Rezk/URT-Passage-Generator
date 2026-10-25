@@ -8,8 +8,8 @@ service-account*.json
 data/
 *.pdf
 
-# Local-only test frontend (not part of the product)
-dev_frontend/
+# Local editor/agent config
+.claude/
 
 # Python
 __pycache__/
