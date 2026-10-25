@@ -92,6 +92,18 @@ and reviewed by hand; they are the source of truth for the generation agent, sam
 the YAML, never the guide, bump `rules_version`, and set `status: approved` once reviewed. The contract
 itself is defined in `corpus_analysis/rules_schema.py`.
 
+Fingerprints for the runtime originality check (no source text is written):
+
+```powershell
+python -m corpus_analysis.fingerprint build --dry-run   # passages per subject, token and cost estimate
+python -m corpus_analysis.fingerprint build             # server/urt/rules/fingerprints/<subject>.json + calibration.json
+```
+
+Each file stores the exact MinHash scheme (normalization, hash, permutation constants) so the Node
+runtime can reproduce it; see the module docstring of `corpus_analysis/fingerprint.py`.
+`calibration.json` lists reprinted duplicates, the similarity distribution of distinct passages and
+the recommended `URT_MAX_*` thresholds.
+
 To use an OpenAI-compatible gateway instead of Gemini directly, set `URT_CA_LLM_PROVIDER=openai`,
 `URT_CA_OPENAI_BASE_URL` and `URT_CA_OPENAI_API_KEY` (see `.env.example`), and add the model's
 price to `prices.yaml`.

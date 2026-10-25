@@ -51,8 +51,12 @@ class PipelineTest(unittest.TestCase):
                      GOOD_DOCUMENT_PAGES[1]]
             build_pdf(self.pdfs / f"booklet_{i}.pdf", pages)
         self.data = root / "data"
-        self.env = mock.patch.dict(os.environ, {"URT_CA_DATA_DIR": str(self.data), "GEMINI_API_KEY": "test",
-                                                "URT_CA_RPM": "100000", "URT_CA_CONCURRENCY": "2"}, clear=False)
+        # Start from an environment without any of the tool's settings, so a developer's loaded .env
+        # (provider, gateway URL, keys, budget) can never reach these tests.
+        isolated = {k: v for k, v in os.environ.items() if not k.startswith(("URT_", "GEMINI_", "GOOGLE_"))}
+        isolated.update({"URT_CA_DATA_DIR": str(self.data), "GEMINI_API_KEY": "test",
+                         "URT_CA_RPM": "100000", "URT_CA_CONCURRENCY": "2"})
+        self.env = mock.patch.dict(os.environ, isolated, clear=True)
         self.env.start()
         FakeGemini.instances.clear()
 
@@ -61,7 +65,9 @@ class PipelineTest(unittest.TestCase):
         self._tmp.cleanup()
 
     def run_cli(self, *args):
-        with mock.patch.object(cli, "GeminiClient", FakeGemini):
+        # Patch every real client class: no test may reach the network, whichever provider is selected.
+        with mock.patch.object(cli, "GeminiClient", FakeGemini), \
+                mock.patch.object(cli, "OpenAICompatibleClient", FakeGemini):
             return cli.main(["run", "--local-dir", str(self.pdfs.parent), *args])
 
     def test_dry_run_makes_no_calls(self):

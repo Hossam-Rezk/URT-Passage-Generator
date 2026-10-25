@@ -5,7 +5,7 @@
 | Version | 3 (full plan; replaces v1 in chat and the v2 decisions file) |
 | Date | 2026-10-24 |
 | Target | ElRokh Academy monorepo: `/server` (Express 5 ESM, Node 20+, Sequelize, MySQL 8.0) |
-| Status | Phase 0 approved. Phase 1 Step A built; the sample run is next. |
+| Status | Code complete for M1–M10 (2026-10-25); see the milestone table for what still needs a live run (MySQL, API credit). |
 
 Items marked **OPEN** still need a decision (see §18). Nothing in the platform database
 changes until the migrations in §8 are approved.
@@ -162,7 +162,7 @@ before locking):
 | Generation | `URT_MODEL_GENERATION` | `gemini-4-argon` |
 | Validation (review + blind solve) | `URT_MODEL_VALIDATION` | `gemini-3.8-flash` |
 | Feedback | `URT_MODEL_FEEDBACK` | `gemini-3.5-flash-lite` |
-| Embeddings | `URT_MODEL_EMBEDDING` | `gemini-embedding-001` (768 dims) |
+| Embeddings | `URT_MODEL_EMBEDDING` | `text-embedding-3-small` (1536 dims), via the OpenAI-compatible gateway, which does not offer `gemini-embedding-001`. Fingerprints were built with it, so the runtime must use the same model |
 | Phase 1 extraction / synthesis | `URT_CA_MODEL_EXTRACT` / `URT_CA_MODEL_SYNTHESIS` | `gemini-3.8-flash` / `gemini-4-argon` |
 
 The validator deliberately runs on a different model from the generator, so the generator
@@ -212,10 +212,17 @@ New subcommands: `python -m corpus_analysis synthesize` and `… fingerprint`.
 4. **Output:** `server/urt/rules/<subject>.yaml` with `status: draft`, validated against
    `rules.schema.json`. **You review and edit, then set `status: approved`.**
 5. **Fingerprints:** for each source passage, a MinHash signature (128 permutations, word
-   5-shingles) and a `gemini-embedding-001` embedding (768 dims, float32, base64). The file
+   5-shingles) and a `text-embedding-3-small` embedding (1536 dims, float32, base64). The file
    records the embedding model and dimensions, and the runtime refuses fingerprints made
    with a different model. Duplicate thresholds are calibrated from how similar the corpus
-   passages are to each other.
+   passages are to each other. *Built 2026-10-25:* 88 passages in `server/urt/rules/fingerprints/`;
+   the exact MinHash scheme (normalization, hash, permutation constants) is stored in each file for
+   the Node runtime to reproduce. Distinct corpus passages reached at most Jaccard 0.07 and cosine
+   0.70; two reprinted passages (2018/2020 items reused in 2022) are listed in `calibration.json`.
+   Recommended: `URT_MAX_CORPUS_JACCARD=0.2`, `URT_MAX_CORPUS_COSINE=0.85`, `URT_MAX_POOL_COSINE=0.85`.
+   A passage fails if **either** check fires: one reprint scored high on Jaccard but only 0.80
+   cosine, the other 0.88 cosine but only 0.33 Jaccard. Verify against the near-copy items of the
+   validator evaluation set (M6).
 
 Step B costs little (a few dozen LLM calls plus about 1 embedding per passage) and runs
 under the same ledger and budget.
@@ -510,9 +517,9 @@ The two response shapes:
 | Group | Variables |
 |---|---|
 | Credentials | `GEMINI_API_KEY` |
-| Models | `URT_MODEL_GENERATION`, `URT_MODEL_VALIDATION`, `URT_MODEL_FEEDBACK`, `URT_MODEL_EMBEDDING`, `URT_EMBEDDING_DIMS=768` |
+| Models | `URT_MODEL_GENERATION`, `URT_MODEL_VALIDATION`, `URT_MODEL_FEEDBACK`, `URT_MODEL_EMBEDDING=text-embedding-3-small`, `URT_EMBEDDING_DIMS=1536` |
 | Generation and buffer | `URT_MAX_GENERATION_ATTEMPTS=3`, `URT_MAX_CONCURRENT_GENERATIONS=2`, `URT_FRESH_BUFFER_TARGET=15`, `URT_FRESH_BUFFER_LOW=5`, `URT_DAILY_COST_CAP_USD` |
-| Originality thresholds | `URT_MAX_CORPUS_JACCARD`, `URT_MAX_CORPUS_COSINE`, `URT_MAX_POOL_COSINE` (set from Phase 1 calibration) |
+| Originality thresholds | `URT_MAX_CORPUS_JACCARD=0.2`, `URT_MAX_CORPUS_COSINE=0.85`, `URT_MAX_POOL_COSINE=0.85` (from the Phase 1 calibration, `fingerprints/calibration.json`) |
 | Rules | `URT_RULES_DIR`, `URT_ALLOW_DRAFT_RULES=false` |
 | Serving | `URT_RECENT_TOPIC_WINDOW=5`, `URT_JOB_POLL_MS=3000`, `URT_NEXT_RATE_LIMIT_PER_MIN=10` |
 
@@ -588,15 +595,15 @@ server with a dev login. It is not referenced from production code, the README o
 | # | Milestone | Gate (your approval) |
 |---|---|---|
 | M1 | Phase 1 Step A tool | ✅ built |
-| M2 | Sample run (5–10 files) and report | Splitting quality OK → full run |
-| M3 | Full Step A run (≤ US$5) | Dead-letter and coverage reviewed |
-| M4 | Step B: topic mapping, `rules/*.yaml` (draft), fingerprints | **You review and edit the rules → `approved`** |
-| M5 | Migrations + models | **Schema approved** |
-| M6 | LLM client, rules loader, sampler, generation and validation agents, validator evaluation set | Sample passages reviewed; cost per passage measured |
-| M7 | Serving service, jobs, fresh buffer, API routes | Invariant and integration tests green |
-| M8 | Feedback agent and cache | Explanation samples reviewed |
-| M9 | README, INTEGRATION.md, ADR, docs, `dev_frontend` | Handover review |
-| M10 | Pre-seed the pool; load and cost check | Launch |
+| M2 | Sample run (5–10 files) and report | ✅ done |
+| M3 | Full Step A run (≤ US$5) | ✅ done: 90 passages, no dead-letters |
+| M4 | Step B: topic mapping, `rules/*.yaml` (draft), fingerprints | ✅ rules approved (v2026.10.0), fingerprints built |
+| M5 | Migrations + models | drafted; not yet run on MySQL |
+| M6 | LLM client, rules loader, sampler, generation and validation agents, validator evaluation set | ✅ 3 samples reviewed, ~US$0.065 per passage; evaluation re-run (v2 prompts) pending |
+| M7 | Serving service, jobs, fresh buffer, API routes | invariant and API tests green (memory repository); MySQL integration tests pending |
+| M8 | Feedback agent and cache | built and tested with a scripted LLM; real explanation samples pending |
+| M9 | README, INTEGRATION.md, ADR, docs, `dev_frontend` | ✅ docs done; `dev_frontend` lives on its own branch |
+| M10 | Pre-seed the pool; load and cost check | `seedPool.js` ready; not run |
 
 ---
 
