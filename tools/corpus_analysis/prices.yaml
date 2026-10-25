@@ -1,0 +1,25 @@
+# USD per 1M tokens, used by the cost ledger and the hard budget stop (URT_CA_MAX_COST_USD).
+# VERIFY against https://ai.google.dev/gemini-api/docs/pricing before the full run.
+# Values marked "unverified" are conservative placeholders, set at or above the
+# previous-generation price. A model missing from this file makes the run fail
+# loudly, because the budget cannot be enforced for it.
+# Thinking tokens are billed as output tokens.
+models:
+  gemini-3.8-flash:
+    input: 0.75      # verified 2026-10-25 (ai.google.dev pricing): introductory rate until 2026-12-31;
+    output: 3.75     # standard from 2027-01-01 is 1.50 / 7.50, so update before any later run
+  gemini-3.5-flash:
+    input: 1.50      # Google Cloud list price (2026-10-25 search); the gateway may bill differently
+    output: 9.00
+  gemini-4-argon:
+    input: 2.50      # unverified placeholder
+    output: 15.00    # unverified placeholder
+  gemini-3.5-flash-lite:
+    input: 0.30
+    output: 2.50
+  text-embedding-3-small:
+    input: 0.02      # OpenAI list price; used through the gateway (gemini-embedding-001 is not offered there)
+    output: 0.0
+  gemini-embedding-001:
+    input: 0.15
+    output: 0.0

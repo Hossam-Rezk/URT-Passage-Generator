@@ -1,0 +1,199 @@
+{
+  "format_version": 1,
+  "created_at": "2026-10-25T01:16:31+00:00",
+  "embedding_model": "text-embedding-3-small",
+  "embedding_dims": 1536,
+  "min_words": 40,
+  "duplicate_jaccard": 0.25,
+  "all_subjects": {
+    "passages": 86,
+    "pairs": 3653,
+    "duplicate_pairs": [
+      {
+        "a": "da8d88d996cf4bbb",
+        "a_source": "Physics Released URT Items 2018.pdf",
+        "b": "0b679d9d03dc5c83",
+        "b_source": "physics urt 2022.pdf",
+        "jaccard": 0.328,
+        "cosine": 0.875
+      },
+      {
+        "a": "76b2e536529cb20b",
+        "a_source": "phy _ chem URT 2020.pdf",
+        "b": "813cfbc95042296c",
+        "b_source": "physics urt 2022.pdf",
+        "jaccard": 0.828,
+        "cosine": 0.801
+      }
+    ],
+    "jaccard": {
+      "n": 3653,
+      "min": 0.0,
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 0.0,
+      "p75": 0.0,
+      "p90": 0.0,
+      "max": 0.0703
+    },
+    "cosine": {
+      "n": 3653,
+      "min": 0.005,
+      "p10": 0.1,
+      "p25": 0.14,
+      "p50": 0.2,
+      "p75": 0.27,
+      "p90": 0.35,
+      "max": 0.7014
+    }
+  },
+  "by_subject": {
+    "biology": {
+      "passages": 13,
+      "pairs": 78,
+      "duplicate_pairs": [],
+      "jaccard": {
+        "n": 78,
+        "min": 0.0,
+        "p10": 0.0,
+        "p25": 0.0,
+        "p50": 0.0,
+        "p75": 0.0,
+        "p90": 0.0,
+        "max": 0.0
+      },
+      "cosine": {
+        "n": 78,
+        "min": 0.0544,
+        "p10": 0.12,
+        "p25": 0.17,
+        "p50": 0.24,
+        "p75": 0.29,
+        "p90": 0.34,
+        "max": 0.472
+      }
+    },
+    "chemistry": {
+      "passages": 16,
+      "pairs": 120,
+      "duplicate_pairs": [],
+      "jaccard": {
+        "n": 120,
+        "min": 0.0,
+        "p10": 0.0,
+        "p25": 0.0,
+        "p50": 0.0,
+        "p75": 0.0,
+        "p90": 0.0,
+        "max": 0.0078
+      },
+      "cosine": {
+        "n": 120,
+        "min": 0.1731,
+        "p10": 0.24,
+        "p25": 0.28,
+        "p50": 0.34,
+        "p75": 0.41,
+        "p90": 0.48,
+        "max": 0.6477
+      }
+    },
+    "english": {
+      "passages": 19,
+      "pairs": 171,
+      "duplicate_pairs": [],
+      "jaccard": {
+        "n": 171,
+        "min": 0.0,
+        "p10": 0.0,
+        "p25": 0.0,
+        "p50": 0.0,
+        "p75": 0.0,
+        "p90": 0.0,
+        "max": 0.0
+      },
+      "cosine": {
+        "n": 171,
+        "min": 0.0269,
+        "p10": 0.13,
+        "p25": 0.18,
+        "p50": 0.26,
+        "p75": 0.32,
+        "p90": 0.41,
+        "max": 0.5682
+      }
+    },
+    "geology": {
+      "passages": 23,
+      "pairs": 253,
+      "duplicate_pairs": [],
+      "jaccard": {
+        "n": 253,
+        "min": 0.0,
+        "p10": 0.0,
+        "p25": 0.0,
+        "p50": 0.0,
+        "p75": 0.0,
+        "p90": 0.0,
+        "max": 0.0156
+      },
+      "cosine": {
+        "n": 253,
+        "min": 0.1063,
+        "p10": 0.19,
+        "p25": 0.23,
+        "p50": 0.29,
+        "p75": 0.36,
+        "p90": 0.43,
+        "max": 0.6812
+      }
+    },
+    "physics": {
+      "passages": 15,
+      "pairs": 103,
+      "duplicate_pairs": [
+        {
+          "a": "da8d88d996cf4bbb",
+          "a_source": "Physics Released URT Items 2018.pdf",
+          "b": "0b679d9d03dc5c83",
+          "b_source": "physics urt 2022.pdf",
+          "jaccard": 0.328,
+          "cosine": 0.875
+        },
+        {
+          "a": "76b2e536529cb20b",
+          "a_source": "phy _ chem URT 2020.pdf",
+          "b": "813cfbc95042296c",
+          "b_source": "physics urt 2022.pdf",
+          "jaccard": 0.828,
+          "cosine": 0.801
+        }
+      ],
+      "jaccard": {
+        "n": 103,
+        "min": 0.0,
+        "p10": 0.0,
+        "p25": 0.0,
+        "p50": 0.0,
+        "p75": 0.0,
+        "p90": 0.0,
+        "max": 0.0703
+      },
+      "cosine": {
+        "n": 103,
+        "min": 0.0569,
+        "p10": 0.18,
+        "p25": 0.25,
+        "p50": 0.32,
+        "p75": 0.39,
+        "p90": 0.47,
+        "max": 0.7014
+      }
+    }
+  },
+  "recommended_env": {
+    "URT_MAX_CORPUS_JACCARD": 0.2,
+    "URT_MAX_CORPUS_COSINE": 0.85,
+    "URT_MAX_POOL_COSINE": 0.85
+  }
+}

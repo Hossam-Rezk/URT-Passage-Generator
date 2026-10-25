@@ -1,0 +1,667 @@
+{
+  "$defs": {
+    "Combination": {
+      "additionalProperties": false,
+      "properties": {
+        "style": {
+          "title": "Style",
+          "type": "string"
+        },
+        "difficulty": {
+          "enum": [
+            "easy",
+            "medium",
+            "hard"
+          ],
+          "title": "Difficulty",
+          "type": "string"
+        },
+        "weight": {
+          "minimum": 0,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "style",
+        "difficulty",
+        "weight"
+      ],
+      "title": "Combination",
+      "type": "object"
+    },
+    "DifficultyLevel": {
+      "additionalProperties": false,
+      "properties": {
+        "weight": {
+          "minimum": 0,
+          "title": "Weight",
+          "type": "number"
+        },
+        "definition": {
+          "title": "Definition",
+          "type": "string"
+        },
+        "passage_markers": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Passage Markers",
+          "type": "array"
+        },
+        "question_markers": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Question Markers",
+          "type": "array"
+        }
+      },
+      "required": [
+        "weight",
+        "definition",
+        "passage_markers",
+        "question_markers"
+      ],
+      "title": "DifficultyLevel",
+      "type": "object"
+    },
+    "FigureKindRule": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "table",
+            "line_chart",
+            "bar_chart",
+            "scatter_plot"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "weight": {
+          "minimum": 0,
+          "title": "Weight",
+          "type": "number"
+        },
+        "rows": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IntRange"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "columns": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IntRange"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "series": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IntRange"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "points": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/IntRange"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "conventions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Conventions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "weight"
+      ],
+      "title": "FigureKindRule",
+      "type": "object"
+    },
+    "Figures": {
+      "additionalProperties": false,
+      "properties": {
+        "probability": {
+          "description": "Share of passages with at least one figure",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Probability",
+          "type": "number"
+        },
+        "max_per_passage": {
+          "minimum": 1,
+          "title": "Max Per Passage",
+          "type": "integer"
+        },
+        "kinds": {
+          "items": {
+            "$ref": "#/$defs/FigureKindRule"
+          },
+          "title": "Kinds",
+          "type": "array"
+        }
+      },
+      "required": [
+        "probability",
+        "max_per_passage",
+        "kinds"
+      ],
+      "title": "Figures",
+      "type": "object"
+    },
+    "GeneratedFrom": {
+      "additionalProperties": false,
+      "properties": {
+        "corpus_passages": {
+          "minimum": 0,
+          "title": "Corpus Passages",
+          "type": "integer"
+        },
+        "analysis_prompt": {
+          "title": "Analysis Prompt",
+          "type": "string"
+        },
+        "synthesized_at": {
+          "title": "Synthesized At",
+          "type": "string"
+        },
+        "sources": {
+          "description": "Source file names only; no source text",
+          "items": {
+            "type": "string"
+          },
+          "title": "Sources",
+          "type": "array"
+        },
+        "provenance": {
+          "description": "What the sources are (official URT papers, prep books, \u2026) and caveats",
+          "title": "Provenance",
+          "type": "string"
+        }
+      },
+      "required": [
+        "corpus_passages",
+        "analysis_prompt",
+        "synthesized_at",
+        "sources",
+        "provenance"
+      ],
+      "title": "GeneratedFrom",
+      "type": "object"
+    },
+    "IntRange": {
+      "additionalProperties": false,
+      "properties": {
+        "min": {
+          "minimum": 0,
+          "title": "Min",
+          "type": "integer"
+        },
+        "max": {
+          "minimum": 0,
+          "title": "Max",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "min",
+        "max"
+      ],
+      "title": "IntRange",
+      "type": "object"
+    },
+    "NumRange": {
+      "additionalProperties": false,
+      "properties": {
+        "min": {
+          "title": "Min",
+          "type": "number"
+        },
+        "max": {
+          "title": "Max",
+          "type": "number"
+        },
+        "p50": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "P50"
+        }
+      },
+      "required": [
+        "min",
+        "max"
+      ],
+      "title": "NumRange",
+      "type": "object"
+    },
+    "QuestionCount": {
+      "additionalProperties": false,
+      "properties": {
+        "min": {
+          "minimum": 1,
+          "title": "Min",
+          "type": "integer"
+        },
+        "max": {
+          "minimum": 1,
+          "title": "Max",
+          "type": "integer"
+        },
+        "typical": {
+          "minimum": 1,
+          "title": "Typical",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "min",
+        "max",
+        "typical"
+      ],
+      "title": "QuestionCount",
+      "type": "object"
+    },
+    "QuestionSet": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "$ref": "#/$defs/QuestionCount"
+        },
+        "options_per_question": {
+          "maximum": 6,
+          "minimum": 2,
+          "title": "Options Per Question",
+          "type": "integer"
+        },
+        "types": {
+          "items": {
+            "$ref": "#/$defs/QuestionType"
+          },
+          "minItems": 1,
+          "title": "Types",
+          "type": "array"
+        },
+        "answer_position_balance": {
+          "title": "Answer Position Balance",
+          "type": "boolean"
+        },
+        "stem_conventions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Stem Conventions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "count",
+        "options_per_question",
+        "types",
+        "answer_position_balance"
+      ],
+      "title": "QuestionSet",
+      "type": "object"
+    },
+    "QuestionType": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9_]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "share": {
+          "minimum": 0,
+          "title": "Share",
+          "type": "number"
+        },
+        "skills": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Skills",
+          "type": "array"
+        },
+        "uses_figure": {
+          "title": "Uses Figure",
+          "type": "boolean"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "share",
+        "skills",
+        "uses_figure",
+        "description"
+      ],
+      "title": "QuestionType",
+      "type": "object"
+    },
+    "Sampling": {
+      "additionalProperties": false,
+      "properties": {
+        "variety_alpha": {
+          "description": "p \u221d weight^alpha; < 1 flattens toward rarer topics",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "title": "Variety Alpha",
+          "type": "number"
+        },
+        "recent_topic_window": {
+          "minimum": 0,
+          "title": "Recent Topic Window",
+          "type": "integer"
+        },
+        "recent_topic_penalty": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Recent Topic Penalty",
+          "type": "number"
+        },
+        "pool_balance_weight": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Pool Balance Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "variety_alpha",
+        "recent_topic_window",
+        "recent_topic_penalty",
+        "pool_balance_weight"
+      ],
+      "title": "Sampling",
+      "type": "object"
+    },
+    "Style": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9_]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "weight": {
+          "minimum": 0,
+          "title": "Weight",
+          "type": "number"
+        },
+        "structure": {
+          "description": "Paragraph/section order",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Structure",
+          "type": "array"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "weight",
+        "structure",
+        "description"
+      ],
+      "title": "Style",
+      "type": "object"
+    },
+    "Subtopic": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9_]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "weight": {
+          "minimum": 0,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "weight"
+      ],
+      "title": "Subtopic",
+      "type": "object"
+    },
+    "Topic": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "weight": {
+          "minimum": 0,
+          "title": "Weight",
+          "type": "number"
+        },
+        "subtopics": {
+          "items": {
+            "$ref": "#/$defs/Subtopic"
+          },
+          "minItems": 1,
+          "title": "Subtopics",
+          "type": "array"
+        },
+        "source_labels": {
+          "description": "Raw analysis labels mapped to this topic (for review)",
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Labels",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "weight",
+        "subtopics"
+      ],
+      "title": "Topic",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "rules_version": {
+      "pattern": "^[a-z]+-\\d{4}\\.\\d{2}\\.\\d+$",
+      "title": "Rules Version",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "approved"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "subject": {
+      "enum": [
+        "physics",
+        "chemistry",
+        "geology",
+        "biology",
+        "english"
+      ],
+      "title": "Subject",
+      "type": "string"
+    },
+    "generated_from": {
+      "$ref": "#/$defs/GeneratedFrom"
+    },
+    "sampling": {
+      "$ref": "#/$defs/Sampling"
+    },
+    "topics": {
+      "items": {
+        "$ref": "#/$defs/Topic"
+      },
+      "minItems": 1,
+      "title": "Topics",
+      "type": "array"
+    },
+    "styles": {
+      "items": {
+        "$ref": "#/$defs/Style"
+      },
+      "minItems": 1,
+      "title": "Styles",
+      "type": "array"
+    },
+    "difficulty_levels": {
+      "additionalProperties": {
+        "$ref": "#/$defs/DifficultyLevel"
+      },
+      "propertyNames": {
+        "enum": [
+          "easy",
+          "medium",
+          "hard"
+        ]
+      },
+      "title": "Difficulty Levels",
+      "type": "object"
+    },
+    "allowed_combinations": {
+      "items": {
+        "$ref": "#/$defs/Combination"
+      },
+      "minItems": 1,
+      "title": "Allowed Combinations",
+      "type": "array"
+    },
+    "length_words": {
+      "$ref": "#/$defs/NumRange"
+    },
+    "reading_level_grade": {
+      "$ref": "#/$defs/NumRange"
+    },
+    "figures": {
+      "$ref": "#/$defs/Figures"
+    },
+    "question_set": {
+      "$ref": "#/$defs/QuestionSet"
+    },
+    "distractor_conventions": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Distractor Conventions",
+      "type": "array"
+    },
+    "answer_conventions": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Answer Conventions",
+      "type": "array"
+    },
+    "anti_patterns": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Anti Patterns",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "rules_version",
+    "status",
+    "subject",
+    "generated_from",
+    "sampling",
+    "topics",
+    "styles",
+    "difficulty_levels",
+    "allowed_combinations",
+    "length_words",
+    "reading_level_grade",
+    "figures",
+    "question_set",
+    "distractor_conventions",
+    "answer_conventions",
+    "anti_patterns"
+  ],
+  "title": "URT generation rules",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urt/rules.schema.json"
+}

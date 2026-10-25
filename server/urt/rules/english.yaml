@@ -1,0 +1,221 @@
+# URT English generation rules. Source of truth for the generation agent, sampler and validator.
+# Edit, bump rules_version, run `python -m corpus_analysis.synthesis check`, then set status: approved.
+schema_version: 1
+rules_version: "english-2026.10.0"
+status: approved
+subject: english
+
+generated_from:
+  corpus_passages: 20
+  analysis_prompt: analyze_passage.v1
+  synthesized_at: "2026-10-25"
+  sources:
+    - English.pdf
+  provenance: >-
+    A URT English preparation book ('80 passages for URT'); only its first 60 pages (20 passages) were
+    analyzed to stay within budget. Not an official paper. Its answer key strongly favours option C (56%
+    of answers); that bias is deliberately not copied.
+
+sampling:
+  variety_alpha: 0.6
+  recent_topic_window: 5
+  recent_topic_penalty: 0.5
+  pool_balance_weight: 0.3
+
+topics:
+  - id: personal_development
+    label: Personal development and psychology
+    weight: 5
+    subtopics:
+      - {id: character_traits, label: "Character traits such as grit, confidence and creativity", weight: 3}
+      - {id: communication_skills, label: "Communication and professional skills", weight: 1}
+      - {id: health_wellbeing, label: "Health and well-being habits", weight: 1}
+  - id: education_learning
+    label: Education and learning
+    weight: 4
+    subtopics:
+      - {id: language_learning, label: "Learning languages and reading habits", weight: 1}
+      - {id: thinking_skills, label: "Thinking skills and study", weight: 1}
+      - {id: education_systems, label: "Universities, libraries and access to education", weight: 2}
+  - id: society_technology
+    label: Society and technology
+    weight: 4
+    subtopics:
+      - {id: devices_daily_life, label: "Phones, devices and their effects on daily life", weight: 2}
+      - {id: services_economy, label: "Services, industries and the economy", weight: 2}
+  - id: nature_environment
+    label: Nature, environment and public health
+    weight: 4
+    subtopics:
+      - {id: animals_plants, label: "Animal and plant behaviour", weight: 2}
+      - {id: environment_health, label: "Environmental and public-health problems", weight: 2}
+  - id: history_culture
+    label: History, biography and culture
+    weight: 3
+    subtopics:
+      - {id: biography, label: "Lives and achievements of notable people", weight: 1.5}
+      - {id: monuments_traditions, label: "Monuments, traditions and observances", weight: 1.5}
+
+styles:
+  - id: expository
+    label: Expository
+    weight: 13
+    structure:
+      - "Numbered paragraphs (usually 3–6)"
+      - "Paragraph 1 introduces the subject; later paragraphs develop one aspect each"
+      - "Concrete examples, figures or a short anecdote; brief closing remark"
+    description: >-
+      An informative article on a general-interest subject. Each paragraph has a clear topic so that
+      questions can be tied to it.
+  - id: argumentative
+    label: Argumentative
+    weight: 4
+    structure:
+      - "Problem or claim stated in paragraph 1"
+      - "Causes or reasons, with examples"
+      - "Proposed remedies or policy; closing appeal"
+    description: >-
+      Makes a case (a social problem and its solutions, a policy proposal). Questions ask about the
+      author's purpose, tone, and the reasons given.
+  - id: biographical_narrative
+    label: Biographical or historical account
+    weight: 2
+    structure:
+      - "Introduction of the person or event"
+      - "Chronological or thematic paragraphs on achievements or developments"
+      - "Legacy or significance"
+    description: >-
+      The life of a notable person or the history of an event or monument.
+  - id: reflective_essay
+    label: Reflective essay
+    weight: 1
+    structure:
+      - "Observation about everyday behaviour"
+      - "One or two anecdotes illustrating it"
+      - "Moral or reflection"
+    description: >-
+      A personal, slightly informal essay built on anecdotes.
+
+difficulty_levels:
+  easy:
+    weight: 9
+    definition: >-
+      Most questions are answered by locating one sentence in the passage; vocabulary questions use
+      common academic words; distractors are clearly contradicted by the text. Nearly all corpus
+      passages were easy.
+    passage_markers:
+      - "Plain, concrete prose; short paragraphs; few idioms"
+      - "Clear topic sentence in each paragraph"
+    question_markers:
+      - "Retrieve a stated fact or reason"
+      - "Choose the closest meaning of a common word in context"
+      - "Identify the overall tone from obvious cues"
+  medium:
+    weight: 1
+    definition: >-
+      Several questions need inference across paragraphs, the purpose of a detail, or the meaning of a
+      figurative phrase.
+    passage_markers:
+      - "Abstract ideas or statistics to interpret"
+      - "Figurative language or a quoted opinion"
+    question_markers:
+      - "Infer an unstated implication"
+      - "Identify the function of an example or analogy"
+  hard:
+    weight: 0
+    definition: "Not used: no hard passages or questions in the corpus."
+    passage_markers:
+      - "Not used"
+    question_markers:
+      - "Not used"
+
+allowed_combinations:
+  - {style: expository, difficulty: easy, weight: 12}
+  - {style: expository, difficulty: medium, weight: 1}
+  - {style: argumentative, difficulty: easy, weight: 4}
+  - {style: biographical_narrative, difficulty: easy, weight: 2}
+  - {style: reflective_essay, difficulty: easy, weight: 1}
+
+length_words: {min: 300, max: 430, p50: 360}
+reading_level_grade: {min: 7.5, max: 10.5, p50: 8.5}
+
+figures:
+  probability: 0
+  max_per_passage: 1
+  kinds: []
+
+question_set:
+  count: {min: 8, max: 10, typical: 10}
+  options_per_question: 4
+  answer_position_balance: true
+  types:
+    - id: detail
+      label: Detail
+      share: 0.46
+      uses_figure: false
+      skills:
+        - "Retrieve a fact, reason or example stated in a given paragraph"
+      description: "The most common type; one sentence of the passage answers it."
+    - id: inference
+      label: Inference
+      share: 0.25
+      uses_figure: false
+      skills:
+        - "Infer what the author implies about a person or idea"
+        - "Interpret a figurative phrase or a quotation"
+      description: "Combines statements or reads between the lines."
+    - id: vocabulary_in_context
+      label: Vocabulary in context
+      share: 0.15
+      uses_figure: false
+      skills:
+        - "Choose the closest meaning or synonym of a word as used in the passage"
+      description: "Asks about one word, quoted from the passage, with four single-word or short-phrase options."
+    - id: main_idea_tone
+      label: Main idea and tone
+      share: 0.1
+      uses_figure: false
+      skills:
+        - "Identify the main idea or best title"
+        - "Identify the author's tone or attitude"
+      description: "Usually the last question(s) of the set."
+    - id: negative_detail
+      label: Negative detail
+      share: 0.02
+      uses_figure: false
+      skills:
+        - "Identify the item NOT mentioned among a list"
+      description: "Stem uses NOT in capitals."
+    - id: rhetorical_purpose
+      label: Purpose of a detail
+      share: 0.02
+      uses_figure: false
+      skills:
+        - "Identify why the author includes an example or contrast"
+      description: "Asks about the function of part of the text."
+  stem_conventions:
+    - "Questions follow paragraph order, and stems may name the paragraph ('In paragraph 2, …')"
+    - "Vocabulary stems quote the word: 'The word \"vital\" in paragraph 3 is closest in meaning to'"
+    - "Tone and main-idea questions come last"
+
+distractor_conventions:
+  - "The opposite of what the passage states"
+  - "Plausible real-world facts that the passage does not mention"
+  - "A literal reading of a figurative phrase"
+  - "Antonyms or unrelated meanings in vocabulary questions"
+  - "Extreme wording ('always', 'never', 'only') in wrong options"
+  - "A detail from a different paragraph that does not answer the question"
+
+answer_conventions:
+  - "Exactly four options, A–D, one correct"
+  - "Options are short phrases or single clauses, parallel in form"
+  - "Correct answers spread evenly over A–D (unlike the source book, which favours C)"
+
+anti_patterns:
+  - "No answer-position bias: never let one letter dominate the key"
+  - "No questions that need outside knowledge"
+  - "No two near-identical questions in one set"
+  - "No figures or tables"
+  - "No region-specific detail that a student could not follow without background (the source book often assumes an Indian context); prefer internationally familiar settings"
+  - "No 'all of the above' or 'none of the above' options"
+  - "No two defensible options; the key must follow from the text"

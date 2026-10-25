@@ -1,0 +1,279 @@
+# URT geology generation rules. Source of truth for the generation agent, sampler and validator.
+# Edit, bump rules_version, run `python -m corpus_analysis.synthesis check`, then set status: approved.
+schema_version: 1
+rules_version: "geology-2026.10.0"
+status: approved
+subject: geology
+
+generated_from:
+  corpus_passages: 26
+  analysis_prompt: analyze_passage.v1
+  synthesized_at: "2026-10-25"
+  sources:
+    - ACT Crack Geology.pdf
+  provenance: >-
+    No official URT geology paper was available; all passages come from an ACT science practice book
+    (earth and space science). Its format (data-rich passages, about 5 questions each, three passage
+    types: data representation, research summaries, conflicting viewpoints) matches the official URT
+    science papers closely. ACT labels even-numbered questions F/G/H/J; here all options use A–D.
+    The book also covers astronomy; one astrophysics passage was classified as physics and is not counted.
+
+sampling:
+  variety_alpha: 0.6
+  recent_topic_window: 5
+  recent_topic_penalty: 0.5
+  pool_balance_weight: 0.3
+
+topics:
+  - id: soils
+    label: Soils and surface processes
+    weight: 8
+    subtopics:
+      - {id: erosion_weathering, label: "Erosion and weathering", weight: 2}
+      - {id: soil_salinity, label: "Soil salinity near rivers", weight: 2}
+      - {id: soil_composition, label: "Soil minerals, organic matter and layers", weight: 2}
+      - {id: permeability_porosity, label: "Soil porosity and permeability", weight: 2}
+    source_labels: [earth surface processes and soil science, soil science and pedology, soil chemistry and
+                    environmental geology, soil science and hydrology, soil science, soil mechanics and
+                    hydrology, hydrogeology and soil science, earth surface processes]
+  - id: solid_earth
+    label: Earth's interior, earthquakes and geological time
+    weight: 5
+    subtopics:
+      - {id: seismology, label: "Seismic waves and earthquakes", weight: 2}
+      - {id: magnetic_field, label: "Earth's magnetic field", weight: 1}
+      - {id: dating_stratigraphy, label: "Radiometric dating, fossils and rock layers", weight: 2}
+    source_labels: [seismology and earth's structure, geophysics and seismology, stratigraphy and
+                    geochronology, paleontology and stratigraphy, geophysics and planetary science]
+  - id: planetary_space
+    label: Planets, the Moon and stars
+    weight: 5
+    subtopics:
+      - {id: planetary_atmospheres, label: "Planetary atmospheres", weight: 1.5}
+      - {id: moon_tides, label: "The Moon, eclipses and tides", weight: 1}
+      - {id: exoplanets_stars, label: "Exoplanets and stellar evolution", weight: 1.5}
+      - {id: comets_meteors, label: "Comets and meteors", weight: 1}
+    source_labels: [earth and space science, planetary science, planetary science and oceanography,
+                    astronomy and planetary science, planetary habitability]
+  - id: water
+    label: Lakes, groundwater and hydrology
+    weight: 4
+    subtopics:
+      - {id: lakes, label: "Lake levels, stratification and turnover", weight: 2}
+      - {id: groundwater, label: "Groundwater and aquifers", weight: 1}
+      - {id: ancient_lakes, label: "Ancient lakes and basin sediments", weight: 1}
+    source_labels: [hydrogeology and environmental geology, hydrology, paleolimnology and geomorphology,
+                    earth systems and surface hydrology]
+  - id: oceans_atmosphere_climate
+    label: Oceans, weather and climate
+    weight: 4
+    subtopics:
+      - {id: ocean_structure, label: "Ocean depth zones and temperature profiles", weight: 1}
+      - {id: severe_weather, label: "Tornadoes and severe weather", weight: 1}
+      - {id: climate_sea_level, label: "Past climate and sea level", weight: 1}
+      - {id: energy_emissions, label: "Energy use and greenhouse gas emissions", weight: 1}
+    source_labels: [oceanography, atmospheric science and meteorology, paleoclimatology and earth systems,
+                    environmental science and energy resources]
+
+styles:
+  - id: data_report
+    label: Data representation
+    weight: 10
+    structure:
+      - "One short paragraph introducing the system and the quantities measured"
+      - "Two to four figures and tables (profiles, time series, comparisons)"
+    description: >-
+      Mostly figures with little text. Questions read values, identify trends and combine two figures.
+      Usually easy to medium.
+  - id: experiment_report
+    label: Research summary
+    weight: 7
+    structure:
+      - "Background defining terms and the samples (e.g. Soil X and Soil Y)"
+      - "Experiment or Study 1: method, then a table or graph"
+      - "Experiment or Study 2 (and 3): another variable, each with its own results"
+    description: >-
+      Controlled studies on soils, rocks, water or models. Questions ask what each study shows, how
+      studies differ, and what result to expect under a new condition (interpolation).
+  - id: two_viewpoints
+    label: Conflicting viewpoints
+    weight: 5
+    structure:
+      - "Background on the phenomenon (sometimes with one figure)"
+      - "Scientist 1: explanation and supporting evidence"
+      - "Scientist 2: alternative explanation and evidence"
+    description: >-
+      Two scientists (sometimes three) disagree about a cause or a timeline. Questions ask what each
+      would predict, which evidence weakens which view, and where they agree.
+  - id: expository
+    label: Expository with data
+    weight: 4
+    structure:
+      - "Paragraphs explaining processes in sequence"
+      - "Reference tables or a graph supporting each part"
+    description: >-
+      Explains a set of related processes (weathering types, lake turnover, eclipses and tides) with
+      reference tables or graphs.
+
+difficulty_levels:
+  easy:
+    weight: 12
+    definition: >-
+      Direct lookups from one figure or table, or one comparison; at most one simple subtraction.
+    passage_markers:
+      - "A single study or a set of independent figures"
+      - "Monotonic trends; clearly labelled zones or categories"
+    question_markers:
+      - "Read a value or an intersection on a graph"
+      - "Identify whether a relationship is direct or inverse"
+  medium:
+    weight: 14
+    definition: >-
+      Questions combine two figures or studies, interpolate between conditions, or apply a scientist's
+      criteria to a new case.
+    passage_markers:
+      - "Several experiments or tables to be related"
+      - "Inverted or unusual axes (depth downward, altitude vs temperature)"
+      - "Two or three viewpoints with evidence"
+    question_markers:
+      - "Interpolate or extrapolate from the trend"
+      - "Combine a table value with a graph value"
+      - "Decide how new data affects each viewpoint"
+  hard:
+    weight: 0
+    definition: >-
+      Not used at passage level. About 6% of questions are hard: synthesising three sources or reasoning
+      about an assumption behind a study.
+    passage_markers:
+      - "Not used at passage level"
+    question_markers:
+      - "Identify a hidden assumption, or synthesise three figures"
+
+allowed_combinations:
+  - {style: experiment_report, difficulty: medium, weight: 7}
+  - {style: data_report, difficulty: easy, weight: 6}
+  - {style: data_report, difficulty: medium, weight: 4}
+  - {style: expository, difficulty: easy, weight: 4}
+  - {style: two_viewpoints, difficulty: medium, weight: 3}
+  - {style: two_viewpoints, difficulty: easy, weight: 2}
+
+length_words: {min: 150, max: 450, p50: 250}
+reading_level_grade: {min: 8.5, max: 11, p50: 9.5}
+
+figures:
+  probability: 0.9
+  max_per_passage: 3
+  kinds:
+    - kind: table
+      weight: 19
+      rows: {min: 3, max: 9}
+      columns: {min: 2, max: 5}
+      conventions:
+        - "Titled 'Table 1', … ; first column is the condition, site, depth or time"
+        - "Paired samples are common (Soil X vs Soil Y, Region 1 vs Region 2) as separate columns"
+        - "Units in headers (kg/ha, %, m, °C, km)"
+    - kind: line_chart
+      weight: 15
+      series: {min: 1, max: 4}
+      points: {min: 4, max: 15}
+      conventions:
+        - "Profiles may put depth or altitude on the vertical axis, increasing downward or upward as appropriate"
+        - "Each series is one site, region, planet or condition, named in a legend"
+        - "Time axes may run from past to present"
+    - kind: bar_chart
+      weight: 7
+      series: {min: 1, max: 2}
+      points: {min: 3, max: 8}
+      conventions:
+        - "Bars compare sites, zones or magnitude classes; grouped bars compare two measures"
+    - kind: scatter_plot
+      weight: 1
+      series: {min: 1, max: 3}
+      points: {min: 5, max: 15}
+      conventions:
+        - "Measured values against depth at several sites"
+
+question_set:
+  count: {min: 4, max: 7, typical: 5}
+  options_per_question: 4
+  answer_position_balance: true
+  types:
+    - id: data_interpretation
+      label: Data interpretation
+      share: 0.48
+      uses_figure: true
+      skills:
+        - "Read values, intersections and boundaries from figures"
+        - "Identify direct or inverse relationships across tables"
+        - "Combine information from two figures"
+      description: "The core of geology passages; almost always uses a figure."
+    - id: inference
+      label: Inference
+      share: 0.18
+      uses_figure: false
+      skills:
+        - "Deduce a property from a stated relationship and a definition"
+      description: "One step beyond the text or data."
+    - id: detail
+      label: Detail
+      share: 0.1
+      uses_figure: false
+      skills:
+        - "Identify a claim made by a given scientist or a stated definition"
+      description: "Answer stated in the text."
+    - id: hypothesis_evaluation
+      label: Hypothesis or viewpoint evaluation
+      share: 0.1
+      uses_figure: false
+      skills:
+        - "Assess how new data affects each viewpoint"
+        - "Decide whether data support a claim"
+      description: "Central to conflicting-viewpoints passages."
+    - id: calculation
+      label: Calculation or interpolation
+      share: 0.08
+      uses_figure: true
+      skills:
+        - "Interpolate between adjacent rows or conditions"
+        - "Compute a difference between two read values"
+      description: "Simple arithmetic or interpolation; no formulas beyond the passage."
+    - id: experimental_design
+      label: Experimental design
+      share: 0.03
+      uses_figure: false
+      skills:
+        - "Identify why a step was done or how to extend a study"
+      description: "About method and controls."
+    - id: viewpoint_comparison
+      label: Viewpoint comparison
+      share: 0.03
+      uses_figure: false
+      skills:
+        - "Identify the main disagreement or a shared assumption"
+      description: "Asks where two scientists agree or differ."
+  stem_conventions:
+    - "Stems name the figure, table, study or scientist ('According to Scientist 2', 'Based on Study 1')"
+    - "Prediction stems: 'If Experiment 1 were repeated with …, the result would most likely be …'"
+    - "Occasional NOT/EXCEPT stems, written in capitals"
+
+distractor_conventions:
+  - "Reverse a direction or correlation (increase vs decrease, deeper vs shallower)"
+  - "Use values from an adjacent row, column, zone or grid line"
+  - "Extrapolate beyond the data when interpolation is required (or vice versa)"
+  - "Swap the variables of two studies or the claims of two scientists"
+  - "Absolute wording ('only when', 'independent of') in wrong options"
+  - "True statements that do not answer the question asked"
+
+answer_conventions:
+  - "Exactly four options, A–D, one correct"
+  - "Numeric options and ranges in ascending order, with units"
+  - "Options are short: a term, a value, or a brief directional statement"
+  - "Yes/No questions give the reason in each option ('Yes, because …')"
+
+anti_patterns:
+  - "Questions must be answerable from the passage and figures; outside knowledge is almost never needed (about 2%)"
+  - "No maps, cross-sections or apparatus sketches as required figures; describe them in words"
+  - "No passages that are only text when the style calls for data"
+  - "No data that contradict basic earth science (e.g. temperature rising toward the ocean floor in a normal profile)"
+  - "No 'all of the above' or 'none of the above' options"
+  - "No two defensible options; every option set must have one answer supported by the data"

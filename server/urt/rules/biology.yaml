@@ -1,0 +1,245 @@
+# URT biology generation rules. Source of truth for the generation agent, sampler and validator.
+# Edit, bump rules_version, run `python -m corpus_analysis.synthesis check`, then set status: approved.
+schema_version: 1
+rules_version: "biology-2026.10.0"
+status: approved
+subject: biology
+
+generated_from:
+  corpus_passages: 13
+  analysis_prompt: analyze_passage.v1
+  synthesized_at: "2026-10-25"
+  sources:
+    - 100-passage-based-biology-questions.pdf
+    - ACT Crack Geology.pdf
+  provenance: >-
+    No official URT biology paper was available. 11 passages come from an MCAT-style prep book (100
+    passage-based biology questions) and 2 from an ACT science book. The prep book differs from the URT
+    in shape (about 9 questions per passage, about 60% of questions need outside knowledge, figures in
+    only about a quarter of passages), so the passage shape here follows the official URT science papers
+    (physics and chemistry): shorter question sets, more data, mostly passage-based questions. Topics,
+    skills and distractor ideas draw on the book. The figure rate is an assumption to review.
+
+sampling:
+  variety_alpha: 0.6
+  recent_topic_window: 5
+  recent_topic_penalty: 0.5
+  pool_balance_weight: 0.3
+
+topics:
+  - id: genetics
+    label: Genetics and inheritance
+    weight: 5
+    subtopics:
+      - {id: sex_linked_inheritance, label: "Sex-linked inheritance and X-inactivation", weight: 1}
+      - {id: genetic_disorders, label: "Genetic disorders and their molecular basis", weight: 1.5}
+      - {id: blood_groups, label: "Blood groups and immune compatibility", weight: 1}
+      - {id: mutation_selection, label: "Mutation, selection and antibiotic resistance", weight: 1}
+      - {id: population_genetics, label: "Natural selection and population genetics", weight: 0.5}
+    source_labels: [genetics and microbiology, genetics and molecular biology, genetics and development,
+                    genetics and evolution, genetics and immunology]
+  - id: human_physiology
+    label: Human physiology
+    weight: 5
+    subtopics:
+      - {id: homeostasis, label: "Thermoregulation and homeostasis", weight: 1.5}
+      - {id: cardiovascular, label: "Heart conduction and the cardiac cycle", weight: 1}
+      - {id: bone_calcium, label: "Bone and calcium regulation", weight: 1}
+      - {id: digestion_immunity, label: "Digestive disease and immunity", weight: 1}
+      - {id: environmental_responses, label: "Responses to cold, altitude, diving and exercise", weight: 0.5}
+    source_labels: [physiology, human physiology, human physiology & immunology, physiology and anatomy,
+                    cardiovascular physiology]
+  - id: cell_biochemistry
+    label: Cells and biochemistry
+    weight: 2
+    subtopics:
+      - {id: enzymes, label: "Enzyme activity and its dependence on pH and temperature", weight: 1}
+    source_labels: [cellular biology and biochemistry]
+  - id: ecology_evolution
+    label: Ecology and evolution
+    weight: 2
+    subtopics:
+      - {id: population_dynamics, label: "Population size and structure over time", weight: 1}
+      - {id: origin_of_life, label: "Origin-of-life experiments", weight: 1}
+    source_labels: [ecology, origin of life]
+
+styles:
+  - id: expository
+    label: Expository with data
+    weight: 5
+    structure:
+      - "Introduction of the biological system or condition"
+      - "Mechanism paragraph (how it works at organ, cell or gene level)"
+      - "A data table or graph (e.g. activity vs pH, frequency of a trait)"
+      - "Optional paragraph on a disorder or an application"
+    description: >-
+      Explains a biological mechanism and its consequences, supported by data. Questions apply the
+      mechanism to new cases and read the data.
+  - id: experiment_report
+    label: Experiment report
+    weight: 3
+    structure:
+      - "Background on the organism and conditions"
+      - "Experiment 1: treatment and results table"
+      - "Experiment 2: a follow-up that isolates one factor"
+    description: >-
+      Controlled experiments on organisms, cells or enzymes (e.g. growth on different media after a
+      treatment). Questions ask what each result shows and which experiment tests a hypothesis.
+  - id: data_report
+    label: Data report
+    weight: 2
+    structure:
+      - "Brief description of the survey or measurement"
+      - "Two or three figures (time series, distributions)"
+    description: >-
+      A field or survey study summarised in graphs; questions compare years, groups or trends.
+  - id: narrative_scenario
+    label: Narrative scenario
+    weight: 1
+    structure:
+      - "A person or case introduced in a situation"
+      - "Sequence of physiological responses described as the situation changes"
+    description: >-
+      A case (e.g. a person training in different environments) used to frame physiological questions.
+
+difficulty_levels:
+  easy:
+    weight: 2
+    definition: >-
+      Answers are stated in the text or read directly from one figure; one step.
+    passage_markers:
+      - "One mechanism, clearly described"
+      - "A single small table or graph"
+    question_markers:
+      - "Identify a stated function or effect"
+      - "Read the optimum or the largest value from a figure"
+  medium:
+    weight: 11
+    definition: >-
+      Questions combine the mechanism with the data, predict the effect of a change, or work out simple
+      inheritance probabilities. All corpus passages were at this level.
+    passage_markers:
+      - "A mechanism with several interacting parts (hormones, genes, immune cells)"
+      - "Data that must be related to the mechanism"
+    question_markers:
+      - "Predict the physiological response to a change"
+      - "Combine two inheritance patterns in a cross"
+      - "Judge which observation would weaken a hypothesis"
+  hard:
+    weight: 0
+    definition: >-
+      Not used at passage level. About 9% of questions are hard: multi-generation genetics probabilities
+      or chains of physiological cause and effect.
+    passage_markers:
+      - "Not used at passage level"
+    question_markers:
+      - "Multi-step probability or multi-step causal chain"
+
+allowed_combinations:
+  - {style: expository, difficulty: medium, weight: 5}
+  - {style: experiment_report, difficulty: medium, weight: 2}
+  - {style: experiment_report, difficulty: easy, weight: 1}
+  - {style: data_report, difficulty: medium, weight: 1}
+  - {style: data_report, difficulty: easy, weight: 1}
+  - {style: narrative_scenario, difficulty: medium, weight: 1}
+
+length_words: {min: 220, max: 420, p50: 300}
+reading_level_grade: {min: 9.5, max: 11.5, p50: 10.5}
+
+figures:
+  probability: 0.7
+  max_per_passage: 2
+  kinds:
+    - kind: table
+      weight: 2
+      rows: {min: 3, max: 7}
+      columns: {min: 2, max: 4}
+      conventions:
+        - "One row per group, genotype, treatment or condition; units in headers"
+    - kind: line_chart
+      weight: 2
+      series: {min: 1, max: 3}
+      points: {min: 5, max: 12}
+      conventions:
+        - "Activity or rate vs pH, temperature or time; each series one enzyme, organism or group"
+    - kind: bar_chart
+      weight: 1
+      series: {min: 1, max: 2}
+      points: {min: 3, max: 8}
+      conventions:
+        - "Counts or frequencies across categories (e.g. size classes, years)"
+
+question_set:
+  count: {min: 5, max: 8, typical: 6}
+  options_per_question: 4
+  answer_position_balance: true
+  types:
+    - id: inference
+      label: Inference
+      share: 0.32
+      uses_figure: false
+      skills:
+        - "Deduce how a regulatory mechanism responds to a change"
+        - "Predict the consequence of a mutation or disorder"
+      description: "Applies the passage's mechanism one step further."
+    - id: detail
+      label: Detail
+      share: 0.22
+      uses_figure: false
+      skills:
+        - "Identify a mechanism or function stated in the text"
+      description: "Answer stated in the text."
+    - id: data_interpretation
+      label: Data interpretation
+      share: 0.2
+      uses_figure: true
+      skills:
+        - "Compare growth or activity across conditions"
+        - "Relate counts in a figure to the biological process described"
+      description: "Answered from the table or graph."
+    - id: concept_application
+      label: Concept application
+      share: 0.1
+      uses_figure: false
+      skills:
+        - "Classify a mutation type or a mode of inheritance"
+      description: "Basic syllabus concept tied to the passage topic."
+    - id: hypothesis_evaluation
+      label: Hypothesis evaluation
+      share: 0.08
+      uses_figure: false
+      skills:
+        - "Identify evidence that would weaken or support a stated hypothesis"
+      description: "Tests a claim against evidence."
+    - id: calculation
+      label: Calculation
+      share: 0.08
+      uses_figure: false
+      skills:
+        - "Probability of offspring genotypes or phenotypes in a cross"
+      description: "Simple genetics probabilities; no lengthy arithmetic."
+  stem_conventions:
+    - "Negative stems are used occasionally and written in capitals ('Which is NOT …')"
+    - "Scenario stems restate the situation briefly before asking"
+
+distractor_conventions:
+  - "A real mechanism acting in the wrong direction (increase vs decrease, sympathetic vs parasympathetic)"
+  - "A neighbouring organ, compartment or molecule (small vs large intestine, the wrong hormone)"
+  - "2×2 grids of paired effects where only one combination is right"
+  - "Teleological or Lamarckian explanations of mutation and selection"
+  - "Absolute wording ('all', 'always', 'none') in wrong options"
+  - "One correct element paired with an irrelevant one"
+
+answer_conventions:
+  - "Exactly four options, A–D, one correct"
+  - "Options range from single terms to short sentences, parallel within a question"
+  - "Numeric or probability options in ascending order"
+
+anti_patterns:
+  - "Most questions must be answerable from the passage and its data; at most about a quarter may rely on basic syllabus knowledge (the prep book's many passage-independent recall questions are not URT style)"
+  - "No more than 8 questions per passage"
+  - "No anatomical drawings, apparatus sketches or pathway diagrams as required figures; describe them in words"
+  - "No clinical treatment advice or medical-school-level pathology detail"
+  - "No invented technical terms presented as real"
+  - "No 'all of the above' or 'none of the above' options"
+  - "No two defensible options"

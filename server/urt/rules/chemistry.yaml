@@ -1,0 +1,260 @@
+# URT chemistry generation rules. Source of truth for the generation agent, sampler and validator.
+# Edit, bump rules_version, run `python -m corpus_analysis.synthesis check`, then set status: approved.
+schema_version: 1
+rules_version: "chemistry-2026.10.0"
+status: approved
+subject: chemistry
+
+generated_from:
+  corpus_passages: 16
+  analysis_prompt: analyze_passage.v1
+  synthesized_at: "2026-10-25"
+  sources:
+    - phy _ chem URT 2020.pdf
+    - 100-passage-based-Chemistry-Questions.pdf
+    - ACT Crack Geology.pdf
+  provenance: >-
+    4 passages come from the official 2020 URT paper; 11 from an MCAT-style prep book (100 passage-based
+    chemistry questions) and 1 from an ACT science book. The prep book is much denser than the URT
+    (about 9 questions per passage, and about 90% of its questions need outside knowledge), so the passage
+    shape here (length, reading level, question count, figure rate, limit on outside knowledge) follows
+    the official URT papers (chemistry and physics), while topics, skills and distractor ideas draw on
+    all sources.
+
+sampling:
+  variety_alpha: 0.6
+  recent_topic_window: 5
+  recent_topic_penalty: 0.5
+  pool_balance_weight: 0.3
+
+topics:
+  - id: structure_periodicity
+    label: Atomic structure, periodicity and bonding
+    weight: 5
+    subtopics:
+      - {id: atomic_models_history, label: "Historical experiments on atomic structure", weight: 1}
+      - {id: periodic_trends, label: "Periodic trends and electronegativity", weight: 1.5}
+      - {id: ionic_covalent_bonding, label: "Ionic vs covalent compounds and lattice properties", weight: 1}
+      - {id: transition_metals, label: "Transition metal compounds and their reactions", weight: 1.5}
+    source_labels: [atomic theory, periodic trends and chemical bonding, inorganic and general chemistry,
+                    transition metals and organic solvents, general chemistry and chemical principles]
+  - id: solutions
+    label: Solutions and colligative properties
+    weight: 3
+    subtopics:
+      - {id: colligative_osmosis, label: "Osmotic pressure and colligative properties", weight: 2}
+      - {id: solubility_hardness, label: "Solubility equilibria, precipitation and water hardness", weight: 1}
+    source_labels: [solutions and colligative properties, solutions and mixtures, solutions and equilibrium]
+  - id: acids_bases_equilibrium
+    label: Acids, bases and chemical equilibrium
+    weight: 3
+    subtopics:
+      - {id: ph_conductivity, label: "pH, acid/base strength and electrolytic conductivity", weight: 1.5}
+      - {id: equilibrium_le_chatelier, label: "Equilibrium yield and Le Chatelier's principle", weight: 1.5}
+    source_labels: [acids, bases, and aqueous solutions, chemical equilibrium and reactivity,
+                    chemical reactions and thermodynamics]
+  - id: kinetics
+    label: Reaction rates and mechanisms
+    weight: 3
+    subtopics:
+      - {id: rate_factors, label: "Factors affecting reaction rate (temperature, pressure, concentration)", weight: 2}
+      - {id: mechanisms_catalysis, label: "Multi-step mechanisms and catalysis", weight: 1}
+    source_labels: [reaction kinetics, chemical kinetics and reaction mechanisms, atmospheric chemistry]
+  - id: applied_environmental
+    label: Applied and environmental chemistry
+    weight: 1
+    subtopics:
+      - {id: analytical_methods, label: "Extraction and measurement of contaminants", weight: 1}
+    source_labels: [analytical chemistry]
+
+styles:
+  - id: expository
+    label: Expository with data
+    weight: 6
+    structure:
+      - "Introduction defining the concept and its terms"
+      - "Paragraph giving the governing relationship (a formula or a numbered reaction equation)"
+      - "A table and/or graph of data for the substances discussed"
+      - "Optional short paragraph on an application"
+    description: >-
+      Explains a chemical principle (osmosis, periodic trends, equilibrium) and supports it with data for
+      several named substances. Reactions are written inline as 'Reaction 1', 'Reaction 2'. Questions
+      mix reading the data with applying the stated principle.
+  - id: experiment_report
+    label: Experiment report
+    weight: 4
+    structure:
+      - "Definitions needed to classify the results"
+      - "Experiment 1: procedure, then a results table"
+      - "Experiment 2 (and 3): a different variable or a different test, each with its own table or graph"
+    description: >-
+      Students or researchers run tests on a set of samples (pH, conductivity, precipitation, heating).
+      Results are qualitative (bright/dim, precipitate colour) or numeric. No conclusion paragraph.
+  - id: data_report
+    label: Data report
+    weight: 2
+    structure:
+      - "Brief context and the quantities measured, with units"
+      - "Two or more graphs or a two-way table (e.g. yield vs temperature and pressure)"
+    description: >-
+      Built around figures: rate vs temperature and rate vs pressure, or equilibrium yield across
+      conditions. Questions compare trends and read values.
+  - id: historical_account
+    label: Historical account of experiments
+    weight: 1
+    structure:
+      - "Experiment 1 by a named scientist: setup, observation, conclusion"
+      - "Experiment 2 by a later scientist that refines the model"
+    description: >-
+      Two classic experiments in sequence (e.g. on atomic structure). Questions ask which experiment
+      supports which conclusion and what both have in common.
+
+difficulty_levels:
+  easy:
+    weight: 3
+    definition: >-
+      Answers come from a direct lookup in a table or graph, or from a definition in the passage; at most
+      one step.
+    passage_markers:
+      - "Simple classification tables (e.g. pH ranges)"
+      - "One experiment with clear qualitative results"
+    question_markers:
+      - "Match a value to a category in a table"
+      - "Identify the trend in one column or one curve"
+  medium:
+    weight: 13
+    definition: >-
+      Questions combine the text with a figure, compare curves or tables, or need a short calculation with
+      the passage's formula. Most passages are at this level.
+    passage_markers:
+      - "A formula or reaction equations plus a data table or graph"
+      - "Several substances or conditions to compare"
+      - "Two figures with different scales"
+    question_markers:
+      - "Use the given formula or the graph to find a concentration or pressure"
+      - "Compare effective concentrations (e.g. including the ionisation factor)"
+      - "Predict the effect of a change using the stated principle (e.g. Le Chatelier)"
+  hard:
+    weight: 0
+    definition: >-
+      Not used at passage level. About 7% of questions are hard: multi-step reasoning across reactions
+      or applying a principle that is not stated (e.g. a rate vs time inversion).
+    passage_markers:
+      - "Not used at passage level"
+    question_markers:
+      - "Chain two relationships, or reason from a mechanism to an observable"
+
+allowed_combinations:
+  - {style: expository, difficulty: medium, weight: 6}
+  - {style: expository, difficulty: easy, weight: 1}
+  - {style: experiment_report, difficulty: medium, weight: 2}
+  - {style: experiment_report, difficulty: easy, weight: 2}
+  - {style: data_report, difficulty: medium, weight: 2}
+  - {style: historical_account, difficulty: medium, weight: 1}
+
+length_words: {min: 220, max: 420, p50: 320}
+reading_level_grade: {min: 9.5, max: 12, p50: 10.5}
+
+figures:
+  probability: 0.9
+  max_per_passage: 3
+  kinds:
+    - kind: table
+      weight: 3
+      rows: {min: 3, max: 8}
+      columns: {min: 2, max: 5}
+      conventions:
+        - "Titled 'Table 1', … ; one row per substance, solution or trial"
+        - "Chemical formulas written in standard notation (subscripts as plain digits are acceptable, e.g. MgCl2)"
+        - "Units in the header (M, atm, °C, kJ/mol); results may be qualitative words (Bright / Dim / No light)"
+    - kind: line_chart
+      weight: 2
+      series: {min: 1, max: 4}
+      points: {min: 4, max: 10}
+      conventions:
+        - "Each series is one substance or condition, named in a legend"
+        - "Physically correct shapes: linear for colligative effects, rising and levelling off for rate vs pressure"
+    - kind: bar_chart
+      weight: 1
+      series: {min: 1, max: 2}
+      points: {min: 3, max: 8}
+      conventions:
+        - "Bars compare a measured quantity across named samples"
+
+question_set:
+  count: {min: 5, max: 8, typical: 6}
+  options_per_question: 4
+  answer_position_balance: true
+  types:
+    - id: inference
+      label: Inference
+      share: 0.28
+      uses_figure: false
+      skills:
+        - "Connect a definition in the text to a trend in the data"
+        - "Attribute a conclusion to the experiment that supports it"
+      description: "Applies the passage's principle to a new case."
+    - id: data_interpretation
+      label: Data interpretation
+      share: 0.26
+      uses_figure: true
+      skills:
+        - "Find the largest or smallest value across curves or rows"
+        - "Classify a sample using a table of ranges"
+      description: "Answered from a table or graph."
+    - id: detail
+      label: Detail
+      share: 0.2
+      uses_figure: false
+      skills:
+        - "Identify a stated relationship or observation"
+      description: "Answer stated in the text; usually easy."
+    - id: calculation
+      label: Calculation
+      share: 0.14
+      uses_figure: true
+      skills:
+        - "Use the passage's formula with values from a table"
+        - "Interpolate or compute a ratio from a graph"
+      description: "Short arithmetic; numbers chosen so no calculator is needed."
+    - id: concept_application
+      label: Concept application
+      share: 0.07
+      uses_figure: false
+      skills:
+        - "Identify oxidation/reduction or the acid/base role in a given equation"
+      description: "Uses a standard general-chemistry concept tied to the passage; keep to basic syllabus level."
+    - id: hypothesis_evaluation
+      label: Hypothesis evaluation
+      share: 0.05
+      uses_figure: true
+      skills:
+        - "Decide whether new data are consistent with a stated model"
+      description: "Tests a claim against the data, often as 'Yes/No, because …' options."
+  stem_conventions:
+    - "Figure questions name the figure or table; reaction questions name the reaction ('In Reaction 2, …')"
+    - "Some stems are two-part judgements answered 'Yes, because …' / 'No, because …'"
+
+distractor_conventions:
+  - "Reverse the direction of a trend or effect (increase vs decrease, acid vs base)"
+  - "Use the value from an adjacent row, category or curve"
+  - "Ignore a stated factor (e.g. use nominal molarity instead of effective particle concentration)"
+  - "Factor-of-10 slips in unit conversions"
+  - "Confuse rate with time, or charge signs of particles"
+  - "2×2 grids of paired properties (strong/weak × acid/base) where only one cell is right"
+  - "In 'Yes/No, because' options, pair the right verdict with a wrong reason"
+
+answer_conventions:
+  - "Exactly four options, A–D, one correct"
+  - "Numeric options in ascending order, with units"
+  - "Formulas and equations in standard notation"
+  - "Options short and parallel in structure"
+
+anti_patterns:
+  - "Most questions must be answerable from the passage and its data; at most about a quarter may rely on basic syllabus knowledge (the prep-book habit of passage-independent questions is not URT style)"
+  - "No more than 8 questions per passage"
+  - "No figures that cannot be built from data (apparatus sketches, particle diagrams, molecular structures, energy-profile options); describe these in words"
+  - "No organic reaction mechanisms or advanced topics beyond general chemistry"
+  - "No data that violate chemistry (e.g. pH outside 0–14 for ordinary solutions, inconsistent units)"
+  - "No 'all of the above' or 'none of the above' options"
+  - "No two defensible options"
